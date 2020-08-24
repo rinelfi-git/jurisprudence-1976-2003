@@ -18,7 +18,7 @@ public class MSAccessDaoFactory implements DaoFactory {
 		MSAccessDaoFactory self = null;
 		try {
 			Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
-			String databaseLocation = MSAccessDaoFactory.class.getResource("/mg/jurisprudence/other/embedDatabase/jurisprudence.accdb").getPath();
+			String databaseLocation = "/home/rinelfi/Workspace/java/intellij_idea/jurisprudence/embed database/jurisprudence.accdb";
 			System.out.println(databaseLocation);
 			self = new MSAccessDaoFactory(databaseLocation);
 		} catch (ClassNotFoundException e) {
