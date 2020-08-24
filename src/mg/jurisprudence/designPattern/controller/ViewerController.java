@@ -1,18 +1,17 @@
 package mg.jurisprudence.designPattern.controller;
 
+import java.net.URL;
+import java.text.DateFormat;
+import java.util.ResourceBundle;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import mg.jurisprudence.beans.Jurisprudence;
-
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.net.URL;
-import java.text.DateFormat;
-import java.util.ResourceBundle;
 
 public class ViewerController implements Initializable {
 	@FXML
@@ -24,7 +23,7 @@ public class ViewerController implements Initializable {
 	@FXML
 	private TextField nomPartieView;
 	
-	@FXML
+	@FXML	
 	private TextField commentaireView;
 	
 	@FXML
@@ -48,8 +47,9 @@ public class ViewerController implements Initializable {
 	@FXML
 	void copyToClipboard(ActionEvent event) {
 		String formattedCopyFields = new String(texteView.getText());
-		StringSelection selection = new StringSelection(formattedCopyFields);
-		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		clipboard.setContents(selection, selection);
+		ClipboardContent clipboardContent = new ClipboardContent();
+		clipboardContent.putString(formattedCopyFields);
+		Clipboard clipboard = Clipboard.getSystemClipboard();
+		clipboard.setContent(clipboardContent);
 	}
 }

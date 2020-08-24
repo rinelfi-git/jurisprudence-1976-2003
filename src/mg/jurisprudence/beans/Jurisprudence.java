@@ -1,10 +1,9 @@
 package mg.jurisprudence.beans;
 
+import java.util.Date;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-
-import java.text.DateFormat;
-import java.util.Date;
 
 public class Jurisprudence {
 	private int id;

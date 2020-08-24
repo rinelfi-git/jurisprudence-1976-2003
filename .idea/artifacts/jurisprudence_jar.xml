@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="jurisprudence:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/jurisprudence_jar</output-path>
+    <root id="archive" name="jurisprudence.jar">
+      <element id="module-output" name="jurisprudence" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../external-libs/commons-logging-1.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../external-libs/hsqldb-2.5.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../external-libs/commons-lang3-3.8.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../external-libs/jackcess-3.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../external-libs/ucanaccess-5.0.0.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

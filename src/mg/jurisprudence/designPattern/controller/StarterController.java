@@ -15,9 +15,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mg.jurisprudence.beans.Jurisprudence;
-import mg.jurisprudence.designPattern.model.dao.Constraint;
+import mg.jurisprudence.designPattern.model.dao.msaccess.Constraint;
 import mg.jurisprudence.designPattern.model.dao.DaoFactory;
-import mg.jurisprudence.designPattern.model.dao.MSAccessDaoFactory;
+import mg.jurisprudence.designPattern.model.dao.msaccess.MSAccessDaoFactory;
 import mg.jurisprudence.designPattern.model.dao.interfaces.InJurisprudence;
 
 import java.net.URL;
@@ -55,7 +55,7 @@ public class StarterController implements Initializable {
 			dynamicSelectionDateElements.add(selectionDateElement);
 		}
 		// convert arraylist to observablelist
-		ObservableList observableSelectionDateElements = FXCollections.observableArrayList(dynamicSelectionDateElements);
+		ObservableList<String> observableSelectionDateElements = FXCollections.observableArrayList(dynamicSelectionDateElements);
 		selectionDate.setItems(observableSelectionDateElements);
 		selectionDate.getSelectionModel().select(0);
 	}
@@ -138,7 +138,7 @@ public class StarterController implements Initializable {
 		int index = tableView.getSelectionModel().getSelectedItem().getId();
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			URL location = getClass().getResource("/mg/jurisprudence/view/ViewerView.fxml");
+			URL location = getClass().getResource("/mg/jurisprudence/designPattern/view/ViewerView.fxml");
 			loader.load(location.openStream());
 			Jurisprudence jurisprudence = inJurisprudence.select(index);
 			ViewerController controller = loader.getController();

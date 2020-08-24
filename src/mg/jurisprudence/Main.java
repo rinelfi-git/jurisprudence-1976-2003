@@ -1,13 +1,12 @@
 package mg.jurisprudence;
 
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.net.URL;
 
 public class Main extends Application {
 	
@@ -20,7 +19,7 @@ public class Main extends Application {
 		Parent parent = null;
 		
 		try {
-			parent = FXMLLoader.load(getClass().getResource("/mg/jurisprudence/view/StarterView.fxml"));
+			parent = FXMLLoader.load(getClass().getResource("/mg/jurisprudence/designPattern/view/StarterView.fxml"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
