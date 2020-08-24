@@ -9,8 +9,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import mg.jurisprudence.designPattern.model.dao.DaoFactory;
-import mg.jurisprudence.designPattern.model.dao.implementations.ImJurisprudence;
-import mg.jurisprudence.designPattern.model.dao.interfaces.InJurisprudence;
+import mg.jurisprudence.designPattern.model.implementations.ImJurisprudence;
+import mg.jurisprudence.designPattern.model.interfaces.InJurisprudence;
 
 public class MSAccessDaoFactory implements DaoFactory {
 	private String databaseUrl;

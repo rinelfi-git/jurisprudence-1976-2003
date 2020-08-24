@@ -1,4 +1,4 @@
-package mg.jurisprudence.designPattern.model.dao.interfaces;
+package mg.jurisprudence.designPattern.model.interfaces;
 
 import mg.jurisprudence.beans.Jurisprudence;
 import mg.jurisprudence.designPattern.model.dao.msaccess.Constraint;

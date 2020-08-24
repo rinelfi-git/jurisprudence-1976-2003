@@ -1,9 +1,9 @@
-package mg.jurisprudence.designPattern.model.dao.implementations;
+package mg.jurisprudence.designPattern.model.implementations;
 
 import mg.jurisprudence.beans.Jurisprudence;
 import mg.jurisprudence.designPattern.model.dao.msaccess.Constraint;
 import mg.jurisprudence.designPattern.model.dao.DaoFactory;
-import mg.jurisprudence.designPattern.model.dao.interfaces.InJurisprudence;
+import mg.jurisprudence.designPattern.model.interfaces.InJurisprudence;
 
 import java.sql.*;
 import java.util.ArrayList;
