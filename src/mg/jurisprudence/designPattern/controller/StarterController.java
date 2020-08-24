@@ -1,6 +1,5 @@
 package mg.jurisprudence.designPattern.controller;
 
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,10 +20,7 @@ import mg.jurisprudence.designPattern.model.dao.DaoFactory;
 import mg.jurisprudence.designPattern.model.dao.MSAccessDaoFactory;
 import mg.jurisprudence.designPattern.model.dao.interfaces.InJurisprudence;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -32,7 +28,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class StarterController implements Initializable {
@@ -143,7 +138,7 @@ public class StarterController implements Initializable {
 		int index = tableView.getSelectionModel().getSelectedItem().getId();
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			URL location = getClass().getResource("/mg/jurisprudence/designPattern/view/ViewerView.fxml");
+			URL location = getClass().getResource("/mg/jurisprudence/view/ViewerView.fxml");
 			loader.load(location.openStream());
 			Jurisprudence jurisprudence = inJurisprudence.select(index);
 			ViewerController controller = loader.getController();
@@ -165,7 +160,7 @@ public class StarterController implements Initializable {
 		if (!numeroArret.getText().equals("")) constraints.add(new Constraint("numero", numeroArret.getText()));
 		if (!nomPartie.getText().equals("")) constraints.add(new Constraint("nom_partie", nomPartie.getText()));
 		if (!commentaire.getText().equals("")) constraints.add(new Constraint("commentaire", commentaire.getText()));
-		if (!texte.getText().equals("")) constraints.add(new Constraint("nom_partie", texte.getText()));
+		if (!texte.getText().equals("")) constraints.add(new Constraint("texte", texte.getText()));
 		if(selectionDate.getSelectionModel().getSelectedIndex() != 0) {
 			LocalDate debut = dateDebut.getValue();
 			Instant instant = Instant.from(debut.atStartOfDay(ZoneId.systemDefault()));
