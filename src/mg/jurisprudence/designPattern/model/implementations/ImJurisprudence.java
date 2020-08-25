@@ -45,6 +45,8 @@ public class ImJurisprudence implements InJurisprudence {
 			}
 		} catch (SQLException throwables) {
 			throwables.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		} finally {
 			try {
 				if (connection != null) connection.close();
@@ -79,6 +81,8 @@ public class ImJurisprudence implements InJurisprudence {
 			}
 		} catch (SQLException throwables) {
 			throwables.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		} finally {
 			try {
 				if (connection != null) connection.close();

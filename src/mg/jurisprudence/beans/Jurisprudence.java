@@ -13,7 +13,14 @@ public class Jurisprudence {
 	private String commentaire;
 	private String texte;
 	
-	public Jurisprudence() { }
+	public Jurisprudence() {
+		setId(0);
+		setNumero("");
+		setNomPartie("");
+		setDateDecision(new Date());
+		setCommentaire("");
+		setTexte("");
+	}
 	
 	public int getId() {
 		return id;

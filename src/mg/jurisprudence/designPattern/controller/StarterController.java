@@ -1,5 +1,6 @@
 package mg.jurisprudence.designPattern.controller;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,6 +30,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class StarterController implements Initializable {
 	private DaoFactory daoFactory;
@@ -36,10 +38,49 @@ public class StarterController implements Initializable {
 	private String[] selectionDateElements;
 	ArrayList<Constraint> constraints;
 	
+	@FXML
+	private Button showRecord;
+	
+	@FXML
+	private TextField numeroArret;
+	
+	@FXML
+	private TextField nomPartie;
+	
+	@FXML
+	private ComboBox<String> selectionDate;
+	
+	@FXML
+	private DatePicker dateDebut;
+	
+	@FXML
+	private DatePicker dateFin;
+	
+	@FXML
+	private TextField commentaire;
+	
+	@FXML
+	private TextField texte;
+	
+	@FXML
+	private TableView<Jurisprudence> tableView;
+	@FXML
+	private TableColumn<Jurisprudence, Integer> jurId;
+	
+	@FXML
+	private TableColumn<Jurisprudence, String> jurDate;
+	
+	@FXML
+	private TableColumn<Jurisprudence, String> jurNumero;
+	
+	@FXML
+	private TableColumn<Jurisprudence, String> jurNomPartie;
+	
+	@FXML
+	private TableColumn<Jurisprudence, String> jurCommentaire;
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		this.daoFactory = MSAccessDaoFactory.getInstance();
-		this.inJurisprudence = daoFactory.getJurisprudenceDao();
 		this.selectionDateElements = new String[]{"", "Du", "Avant le", "Après le", "Entre le"};
 		constraints = new ArrayList<>();
 		initSelectionDate();
@@ -47,6 +88,10 @@ public class StarterController implements Initializable {
 		dateFin.setDisable(true);
 		dateDebut.setDisable(true);
 		initDates();
+		Platform.runLater(() -> {
+			daoFactory = MSAccessDaoFactory.getInstance();
+			inJurisprudence = daoFactory.getJurisprudenceDao();
+		});
 	}
 	
 	private void initSelectionDate() {
@@ -93,75 +138,38 @@ public class StarterController implements Initializable {
 	}
 	
 	@FXML
-	private Button showRecord;
-	
-	@FXML
-	private TextField numeroArret;
-	
-	@FXML
-	private TextField nomPartie;
-	
-	@FXML
-	private ComboBox<String> selectionDate;
-	
-	@FXML
-	private DatePicker dateDebut;
-	
-	@FXML
-	private DatePicker dateFin;
-	
-	@FXML
-	private TextField commentaire;
-	
-	@FXML
-	private TextField texte;
-	
-	@FXML
-	private TableView<Jurisprudence> tableView;
-	@FXML
-	private TableColumn<Jurisprudence, Integer> jurId;
-	
-	@FXML
-	private TableColumn<Jurisprudence, String> jurDate;
-	
-	@FXML
-	private TableColumn<Jurisprudence, String> jurNumero;
-	
-	@FXML
-	private TableColumn<Jurisprudence, String> jurNomPartie;
-	
-	@FXML
-	private TableColumn<Jurisprudence, String> jurCommentaire;
-	
-	@FXML
-	void afficher(ActionEvent event) {
+	void selectRecord(ActionEvent event) {
 		int index = tableView.getSelectionModel().getSelectedItem().getId();
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			URL location = getClass().getResource("/mg/jurisprudence/designPattern/view/ViewerView.fxml");
 			loader.load(location.openStream());
-			Jurisprudence jurisprudence = inJurisprudence.select(index);
-			ViewerController controller = loader.getController();
-			loader.setController(controller);
-			controller.initElements(jurisprudence);
 			Scene scene = new Scene(loader.getRoot());
 			Stage stage = new Stage();
-			stage.setScene(scene);
-			stage.initModality(Modality.APPLICATION_MODAL);
-			stage.setTitle("Arrêté N°" + jurisprudence.getNumero());
-			stage.show();
+			final Jurisprudence jurisprudences[] = new Jurisprudence[]{new Jurisprudence()};
+			// Execute the request on parallel
+			Platform.runLater(() -> {
+				jurisprudences[0] = inJurisprudence.select(index);
+				ViewerController controller = loader.getController();
+				loader.setController(controller);
+				controller.initElements(jurisprudences[0]);
+				stage.setTitle("Arrêté N°" + jurisprudences[0].getNumero());
+				stage.setScene(scene);
+				stage.initModality(Modality.APPLICATION_MODAL);
+				stage.show();
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@FXML
-	void appliquerFiltre(ActionEvent event) {
+	void applyFilters(ActionEvent event) {
 		if (!numeroArret.getText().equals("")) constraints.add(new Constraint("numero", numeroArret.getText()));
 		if (!nomPartie.getText().equals("")) constraints.add(new Constraint("nom_partie", nomPartie.getText()));
 		if (!commentaire.getText().equals("")) constraints.add(new Constraint("commentaire", commentaire.getText()));
 		if (!texte.getText().equals("")) constraints.add(new Constraint("texte", texte.getText()));
-		if(selectionDate.getSelectionModel().getSelectedIndex() != 0) {
+		if (selectionDate.getSelectionModel().getSelectedIndex() != 0) {
 			LocalDate debut = dateDebut.getValue();
 			Instant instant = Instant.from(debut.atStartOfDay(ZoneId.systemDefault()));
 			Date date = Date.from(instant);
@@ -204,8 +212,7 @@ public class StarterController implements Initializable {
 		if (selectionDate.getSelectionModel().getSelectedIndex() == 4) {
 			dateFin.setDisable(false);
 			dateDebut.setDisable(false);
-		}
-		else if(selectionDate.getSelectionModel().getSelectedIndex() == 0) {
+		} else if (selectionDate.getSelectionModel().getSelectedIndex() == 0) {
 			dateFin.setDisable(true);
 			dateDebut.setDisable(true);
 		} else {
