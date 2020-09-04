@@ -79,9 +79,6 @@ public class StarterController implements Initializable {
 	@FXML
 	private TableColumn<Jurisprudence, String> jurCommentaire;
 	
-	@FXML
-	private TextArea query;
-	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		this.selectionDateElements = new String[]{"", "Du", "Avant le", "Après le", "Entre le"};
@@ -92,7 +89,7 @@ public class StarterController implements Initializable {
 		dateDebut.setDisable(true);
 		initDates();
 		Platform.runLater(() -> {
-			daoFactory = MSAccess.getInstance();
+			daoFactory = PostgreSQL.getInstance();
 			jurisprudenceDao = daoFactory.getJurisprudenceDao();
 		});
 	}
@@ -199,17 +196,6 @@ public class StarterController implements Initializable {
 		initTable();
 		ArrayList<Jurisprudence> jurisprudences = this.jurisprudenceDao.select(constraints);
 		tableView.setItems(FXCollections.observableArrayList(jurisprudences));
-		String queryString = "INSERT INTO arrete(id, numero, date_decision, nom_partie, texte, commentaire) VALUES\n";
-		for (Jurisprudence jurisprudence : jurisprudences) {
-			queryString += "(" + jurisprudence.getId() + "," +
-				               "'" + (jurisprudence.getNumero() != null ? jurisprudence.getNumero().replace("'", "''") : "") + "'," +
-				               "'" + (jurisprudence.getDateDecision() != null ? jurisprudence.getDateDecision().toString() : "") + "'," +
-				               "'" + (jurisprudence.getNomPartie() != null ? jurisprudence.getNomPartie().replace("'", "''") : "") + "'," +
-				               "'" + (jurisprudence.getTexte() != null ? jurisprudence.getTexte().replace("'", "''") : "") + "'," +
-				               "'" + (jurisprudence.getCommentaire() != null ? jurisprudence.getCommentaire().replace("'", "''") : "") + "'" +
-				               "),\n";
-		}
-		query.setText(queryString);
 		constraints = new ArrayList<>();
 		showRecord.setDisable(true);
 	}
