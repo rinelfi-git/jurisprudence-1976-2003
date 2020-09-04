@@ -16,10 +16,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mg.jurisprudence.beans.Jurisprudence;
-import mg.jurisprudence.designPattern.model.dao.msaccess.Constraint;
+import mg.jurisprudence.designPattern.model.dao.msaccess.MSAccess;
+import mg.jurisprudence.engine.Constraint;
 import mg.jurisprudence.designPattern.model.dao.DaoFactory;
-import mg.jurisprudence.designPattern.model.dao.msaccess.MSAccessDaoFactory;
-import mg.jurisprudence.designPattern.model.interfaces.InJurisprudence;
+import mg.jurisprudence.designPattern.model.dao.postgresql.PostgreSQL;
+import mg.jurisprudence.designPattern.model.interfaces.JurisprudenceDao;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -30,11 +31,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.ResourceBundle;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class StarterController implements Initializable {
 	private DaoFactory daoFactory;
-	private InJurisprudence inJurisprudence;
+	private JurisprudenceDao jurisprudenceDao;
 	private String[] selectionDateElements;
 	ArrayList<Constraint> constraints;
 	
@@ -79,6 +79,9 @@ public class StarterController implements Initializable {
 	@FXML
 	private TableColumn<Jurisprudence, String> jurCommentaire;
 	
+	@FXML
+	private TextArea query;
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		this.selectionDateElements = new String[]{"", "Du", "Avant le", "Après le", "Entre le"};
@@ -89,8 +92,8 @@ public class StarterController implements Initializable {
 		dateDebut.setDisable(true);
 		initDates();
 		Platform.runLater(() -> {
-			daoFactory = MSAccessDaoFactory.getInstance();
-			inJurisprudence = daoFactory.getJurisprudenceDao();
+			daoFactory = MSAccess.getInstance();
+			jurisprudenceDao = daoFactory.getJurisprudenceDao();
 		});
 	}
 	
@@ -149,7 +152,7 @@ public class StarterController implements Initializable {
 			final Jurisprudence jurisprudences[] = new Jurisprudence[]{new Jurisprudence()};
 			// Execute the request on parallel
 			Platform.runLater(() -> {
-				jurisprudences[0] = inJurisprudence.select(index);
+				jurisprudences[0] = jurisprudenceDao.select(index);
 				ViewerController controller = loader.getController();
 				loader.setController(controller);
 				controller.initElements(jurisprudences[0]);
@@ -194,7 +197,19 @@ public class StarterController implements Initializable {
 			}
 		}
 		initTable();
-		tableView.setItems(FXCollections.observableArrayList(this.inJurisprudence.select(constraints)));
+		ArrayList<Jurisprudence> jurisprudences = this.jurisprudenceDao.select(constraints);
+		tableView.setItems(FXCollections.observableArrayList(jurisprudences));
+		String queryString = "INSERT INTO arrete(id, numero, date_decision, nom_partie, texte, commentaire) VALUES\n";
+		for (Jurisprudence jurisprudence : jurisprudences) {
+			queryString += "(" + jurisprudence.getId() + "," +
+				               "'" + (jurisprudence.getNumero() != null ? jurisprudence.getNumero().replace("'", "''") : "") + "'," +
+				               "'" + (jurisprudence.getDateDecision() != null ? jurisprudence.getDateDecision().toString() : "") + "'," +
+				               "'" + (jurisprudence.getNomPartie() != null ? jurisprudence.getNomPartie().replace("'", "''") : "") + "'," +
+				               "'" + (jurisprudence.getTexte() != null ? jurisprudence.getTexte().replace("'", "''") : "") + "'," +
+				               "'" + (jurisprudence.getCommentaire() != null ? jurisprudence.getCommentaire().replace("'", "''") : "") + "'" +
+				               "),\n";
+		}
+		query.setText(queryString);
 		constraints = new ArrayList<>();
 		showRecord.setDisable(true);
 	}

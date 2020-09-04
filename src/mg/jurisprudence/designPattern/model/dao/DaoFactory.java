@@ -1,11 +1,10 @@
 package mg.jurisprudence.designPattern.model.dao;
 
-import mg.jurisprudence.designPattern.model.interfaces.InJurisprudence;
+import mg.jurisprudence.designPattern.model.interfaces.JurisprudenceDao;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 public interface DaoFactory {
-	public Connection getConnection() throws Exception;
-	public InJurisprudence getJurisprudenceDao();
+	Connection getConnection() throws Exception;
+	JurisprudenceDao getJurisprudenceDao();
 }

@@ -1,17 +1,17 @@
-package mg.jurisprudence.designPattern.model.implementations;
+package mg.jurisprudence.designPattern.model.dao.msaccess.implementations;
 
 import mg.jurisprudence.beans.Jurisprudence;
-import mg.jurisprudence.designPattern.model.dao.msaccess.Constraint;
+import mg.jurisprudence.engine.Constraint;
 import mg.jurisprudence.designPattern.model.dao.DaoFactory;
-import mg.jurisprudence.designPattern.model.interfaces.InJurisprudence;
+import mg.jurisprudence.designPattern.model.interfaces.JurisprudenceDao;
 
 import java.sql.*;
 import java.util.ArrayList;
 
-public class ImJurisprudence implements InJurisprudence {
+public class JurisprudenceModel implements JurisprudenceDao {
 	DaoFactory factory;
 	
-	public ImJurisprudence(DaoFactory daoFactory) {
+	public JurisprudenceModel(DaoFactory daoFactory) {
 		this.factory = daoFactory;
 	}
 	

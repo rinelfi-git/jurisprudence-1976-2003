@@ -1,4 +1,4 @@
-package mg.jurisprudence.designPattern.model.dao.msaccess;
+package mg.jurisprudence.engine;
 
 public class Constraint {
 	private String key;
