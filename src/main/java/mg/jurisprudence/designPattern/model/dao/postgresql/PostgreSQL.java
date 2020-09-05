@@ -20,12 +20,22 @@ public class PostgreSQL implements DaoFactory {
 	public static DaoFactory getInstance() {
 		try {
 			Class.forName("org.postgresql.Driver");
-			DaoFactory factory = new PostgreSQL("localhost", "postgres", "postgres", "jurisprudence");
-			return factory;
+			PostgreSQL postgreSQL = new PostgreSQL("localhost", "postgres", "postgres", "jurisprudence");
+			return postgreSQL;
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	@Override
+	public Connection getConnection() throws Exception {
+		return DriverManager.getConnection("jdbc:postgresql://" + getHost() + "/" + getDatabase(), getUsername(), getPassword());
+	}
+	
+	@Override
+	public JurisprudenceDao getJurisprudenceDao() {
+		return new JurisprudenceModel(this);
 	}
 	
 	public String getHost() {
@@ -58,15 +68,5 @@ public class PostgreSQL implements DaoFactory {
 	
 	public void setDatabase(String database) {
 		this.database = database;
-	}
-	
-	@Override
-	public Connection getConnection() throws Exception {
-		return DriverManager.getConnection("jdbc:postgresql://" + getHost() + "/" + getDatabase(), getUsername(), getPassword());
-	}
-	
-	@Override
-	public JurisprudenceDao getJurisprudenceDao() {
-		return new JurisprudenceModel(this);
 	}
 }

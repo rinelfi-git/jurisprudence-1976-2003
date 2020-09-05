@@ -13,39 +13,42 @@ import mg.jurisprudence.designPattern.model.dao.msaccess.implementations.Jurispr
 import mg.jurisprudence.designPattern.model.interfaces.JurisprudenceDao;
 
 public class MSAccess implements DaoFactory {
-	private String databaseUrl;
+	private String database;
 	
-	public MSAccess(String databaseUrl) {
-		setDatabaseUrl(databaseUrl);
+	public MSAccess(String database) {
+		setDatabase(database);
+		File databaseFile = new File(getDatabase());
+		if (!databaseFile.exists()) {
+			try {
+				Files.copy(MSAccess.class.getResourceAsStream("/database/" + getDatabase()), databaseFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
-	public static MSAccess getInstance() {
-		MSAccess self = null;
+	public static DaoFactory getInstance() {
 		try {
 			Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
-			File databaseFile = new File("jurisprudence.accdb");
-			if (!databaseFile.exists())
-				Files.copy(MSAccess.class.getResourceAsStream("/database/jurisprudence.accdb"), databaseFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			self = new MSAccess(databaseFile.getAbsolutePath());
+			MSAccess msAccess = new MSAccess("jurisprudence.accdb");
+			return msAccess;
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-		return self;
+		return null;
 	}
 	
-	private final String getDatabaseUrl() {
-		return databaseUrl;
+	private final String getDatabase() {
+		return database;
 	}
 	
-	private void setDatabaseUrl(String databaseUrl) {
-		this.databaseUrl = databaseUrl;
+	private void setDatabase(String database) {
+		this.database = database;
 	}
 	
 	@Override
 	public Connection getConnection() throws SQLException {
-		return DriverManager.getConnection("jdbc:ucanaccess://" + getDatabaseUrl() + ";memory=false");
+		return DriverManager.getConnection("jdbc:ucanaccess://" + getDatabase() + ";memory=false");
 	}
 	
 	@Override

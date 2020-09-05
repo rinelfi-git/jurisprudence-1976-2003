@@ -17,6 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mg.jurisprudence.beans.Jurisprudence;
 import mg.jurisprudence.designPattern.model.dao.DaoFactory;
+import mg.jurisprudence.designPattern.model.dao.msaccess.MSAccess;
 import mg.jurisprudence.designPattern.model.dao.postgresql.PostgreSQL;
 import mg.jurisprudence.designPattern.model.interfaces.JurisprudenceDao;
 import mg.jurisprudence.engine.Constraint;
@@ -89,7 +90,7 @@ public class StarterController implements Initializable {
 		initDates();
 		new Thread(() -> {
 			Platform.runLater(() -> {
-				daoFactory = PostgreSQL.getInstance();
+				daoFactory = MSAccess.getInstance();
 				jurisprudenceDao = daoFactory.getJurisprudenceDao();
 				try {
 					daoFactory.getConnection();
@@ -171,36 +172,41 @@ public class StarterController implements Initializable {
 	
 	@FXML
 	void applyFilters(ActionEvent event) {
-		if (!numeroArret.getText().equals("")) constraints.add(new Constraint("numero", numeroArret.getText()));
-		if (!nomPartie.getText().equals("")) constraints.add(new Constraint("nom_partie", nomPartie.getText()));
-		if (!commentaire.getText().equals("")) constraints.add(new Constraint("commentaire", commentaire.getText()));
-		if (!texte.getText().equals("")) constraints.add(new Constraint("texte", texte.getText()));
+		Constraint constraint = new Constraint();
+		if (!numeroArret.getText().equals("")) constraint.setNumero(numeroArret.getText());
+		if (!nomPartie.getText().equals("")) constraint.setNomParties(nomPartie.getText());
+		if (!commentaire.getText().equals("")) constraint.setCommentaire(commentaire.getText());
+		if (!texte.getText().equals("")) constraint.setTexte(texte.getText());
 		if (selectionDate.getSelectionModel().getSelectedIndex() != 0) {
-			LocalDate debut = dateDebut.getValue();
-			Instant instant = Instant.from(debut.atStartOfDay(ZoneId.systemDefault()));
-			Date date = Date.from(instant);
-			SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+			constraint.setTreatDate(true);
 			switch (selectionDate.getSelectionModel().getSelectedIndex()) {
 				case 1:
-					constraints.add(new Constraint("date_decision=#" + dateFormat.format(date) + "#"));
+					constraint.setDateDebut(dateDebut.getValue());
+					constraint.setDateFlag(Constraint.DATE_CONSTRAINT_EQUAL);
 					break;
 				case 2:
-					constraints.add(new Constraint("date_decision<#" + dateFormat.format(date) + "#"));
+					constraint.setDateDebut(dateDebut.getValue());
+					constraint.setDateFlag(Constraint.DATE_CONSTRAINT_BEFORE);
+					constraints.add(new Constraint());
 					break;
 				case 3:
-					constraints.add(new Constraint("date_decision>#" + dateFormat.format(date) + "#"));
+					constraint.setDateDebut(dateDebut.getValue());
+					constraint.setDateFlag(Constraint.DATE_CONSTRAINT_AFTER);
 					break;
 				case 4:
-					constraints.add(new Constraint("date_decision>#" + dateFormat.format(date) + "#"));
-					debut = dateFin.getValue();
-					instant = Instant.from(debut.atStartOfDay(ZoneId.systemDefault()));
-					date = Date.from(instant);
-					constraints.add(new Constraint("date_decision<#" + dateFormat.format(date) + "#"));
+					constraint.setDateDebut(dateDebut.getValue());
+					constraint.setDateFin(dateFin.getValue());
+					constraint.setDateFlag(Constraint.DATE_CONSTRAINT_BETWEEN);
 					break;
 			}
 		}
 		initTable();
-		ArrayList<Jurisprudence> jurisprudences = this.jurisprudenceDao.select(constraints);
+		ArrayList<Jurisprudence> jurisprudences = null;
+		boolean textConstraintExists = !constraint.getNumero().equals("") || !constraint.getNomParties().equals("") || !constraint.getCommentaire().equals("") || !constraint.getTexte().equals("");
+		if(constraint.isTreatDate() && textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithDate(constraint);
+		else if(constraint.isTreatDate() && !textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithDateOnly(constraint);
+		else if(!constraint.isTreatDate() && textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithoutDate(constraint);
+		else if(!constraint.isTreatDate() && !textConstraintExists) jurisprudences = this.jurisprudenceDao.select();
 		tableView.setItems(FXCollections.observableArrayList(jurisprudences));
 		constraints = new ArrayList<>();
 		showRecord.setDisable(true);
