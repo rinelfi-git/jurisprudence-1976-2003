@@ -89,13 +89,13 @@ public class Jurisprudence {
 	
 	public String tableViewNomPartie() {
 		StringProperty _nomPartie = new SimpleStringProperty(this, "nom_partie");
-		_nomPartie.set(getNumero());
+		_nomPartie.set(getNomPartie());
 		return _nomPartie.get();
 	}
 	
 	public String tableViewCommetaire() {
 		StringProperty _commentaire = new SimpleStringProperty(this, "commentaire");
-		_commentaire.set(getNumero());
+		_commentaire.set(getCommentaire());
 		return _commentaire.get();
 	}
 	

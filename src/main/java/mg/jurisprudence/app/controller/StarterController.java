@@ -14,12 +14,12 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import mg.jurisprudence.beans.Jurisprudence;
 import mg.jurisprudence.app.model.dao.DaoFactory;
-import mg.jurisprudence.app.model.dao.sqlite.SQLite;
+import mg.jurisprudence.app.model.dao.MSAccess;
 import mg.jurisprudence.app.model.interfaces.JurisprudenceDao;
+import mg.jurisprudence.beans.Jurisprudence;
 import mg.jurisprudence.engine.Constraint;
-import mg.jurisprudence.engine.SQLiteConstraint;
+import mg.jurisprudence.engine.MSAccessConstraint;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -87,7 +87,7 @@ public class StarterController implements Initializable {
 		initDates();
 		new Thread(() -> {
 			Platform.runLater(() -> {
-				daoFactory = SQLite.getInstance();
+				daoFactory = MSAccess.getInstance();
 				jurisprudenceDao = daoFactory.getJurisprudenceDao();
 				try {
 					daoFactory.getConnection();
@@ -113,16 +113,16 @@ public class StarterController implements Initializable {
 		jurId.setCellValueFactory(new PropertyValueFactory<Jurisprudence, Integer>("id"));
 		jurDate.setCellValueFactory(cell -> cell.getValue().tableViewDate());
 		jurDate.setCellFactory(column -> {
-			TableCell<Jurisprudence, Date> cell = new TableCell<Jurisprudence, Date>(){
-				private SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+			TableCell<Jurisprudence, Date> cell = new TableCell<Jurisprudence, Date>() {
+				private SimpleDateFormat format = new SimpleDateFormat("dd MMMM yyyy");
+				
 				@Override
 				protected void updateItem(Date item, boolean empty) {
 					super.updateItem(item, empty);
-					if(empty) {
+					if (empty) {
 						setText(null);
-					}
-					else {
-						if(item != null)
+					} else {
+						if (item != null)
 							this.setText(format.format(item));
 					}
 				}
@@ -186,7 +186,7 @@ public class StarterController implements Initializable {
 	
 	@FXML
 	void applyFilters(ActionEvent event) {
-		Constraint constraint = new SQLiteConstraint();
+		Constraint constraint = new MSAccessConstraint();
 		if (!numeroArret.getText().equals("")) constraint.setNumero(numeroArret.getText());
 		if (!nomPartie.getText().equals("")) constraint.setNomParties(nomPartie.getText());
 		if (!commentaire.getText().equals("")) constraint.setCommentaire(commentaire.getText());
@@ -215,12 +215,11 @@ public class StarterController implements Initializable {
 		}
 		initTable();
 		ArrayList<Jurisprudence> jurisprudences = null;
-		System.out.println("Jurisprudence = " + this.jurisprudenceDao);
 		boolean textConstraintExists = !constraint.getNumero().equals("") || !constraint.getNomParties().equals("") || !constraint.getCommentaire().equals("") || !constraint.getTexte().equals("");
-		if(constraint.isTreatDate() && textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithDate(constraint);
-		else if(constraint.isTreatDate() && !textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithDateOnly(constraint);
-		else if(!constraint.isTreatDate() && textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithoutDate(constraint);
-		else if(!constraint.isTreatDate() && !textConstraintExists) jurisprudences = this.jurisprudenceDao.select();
+		if (constraint.isTreatDate() && textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithDate(constraint);
+		else if (constraint.isTreatDate() && !textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithDateOnly(constraint);
+		else if (!constraint.isTreatDate() && textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithoutDate(constraint);
+		else if (!constraint.isTreatDate() && !textConstraintExists) jurisprudences = this.jurisprudenceDao.select();
 		tableView.setItems(FXCollections.observableArrayList(jurisprudences));
 		constraints = new ArrayList<>();
 		showRecord.setDisable(true);
