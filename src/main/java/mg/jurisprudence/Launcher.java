@@ -19,7 +19,7 @@ public class Launcher extends Application {
 		Parent parent = null;
 		
 		try {
-			parent = FXMLLoader.load(getClass().getResource("/mg/jurisprudence/designPattern/view/StarterView.fxml"));
+			parent = FXMLLoader.load(getClass().getResource("/mg/jurisprudence/app/view/StarterView.fxml"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

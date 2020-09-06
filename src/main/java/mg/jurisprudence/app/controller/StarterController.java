@@ -163,7 +163,7 @@ public class StarterController implements Initializable {
 		int index = tableView.getSelectionModel().getSelectedItem().getId();
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			URL location = getClass().getResource("/mg/jurisprudence/designPattern/view/ViewerView.fxml");
+			URL location = getClass().getResource("/mg/jurisprudence/app/view/ViewerView.fxml");
 			loader.load(location.openStream());
 			Scene scene = new Scene(loader.getRoot());
 			Stage stage = new Stage();
