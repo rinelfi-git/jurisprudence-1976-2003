@@ -1,8 +1,6 @@
-package mg.jurisprudence.designPattern.controller;
+package mg.jurisprudence.app.controller;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,11 +15,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mg.jurisprudence.beans.Jurisprudence;
-import mg.jurisprudence.designPattern.model.dao.DaoFactory;
-import mg.jurisprudence.designPattern.model.dao.sqlite.SQLite;
-import mg.jurisprudence.designPattern.model.interfaces.JurisprudenceDao;
+import mg.jurisprudence.app.model.dao.DaoFactory;
+import mg.jurisprudence.app.model.dao.sqlite.SQLite;
+import mg.jurisprudence.app.model.interfaces.JurisprudenceDao;
 import mg.jurisprudence.engine.Constraint;
-import mg.jurisprudence.engine.MSAccessConstraint;
 import mg.jurisprudence.engine.SQLiteConstraint;
 
 import java.net.URL;

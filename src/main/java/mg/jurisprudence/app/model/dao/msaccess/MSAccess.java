@@ -1,4 +1,4 @@
-package mg.jurisprudence.designPattern.model.dao.msaccess;
+package mg.jurisprudence.app.model.dao.msaccess;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,9 +8,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import mg.jurisprudence.designPattern.model.dao.DaoFactory;
-import mg.jurisprudence.designPattern.model.dao.msaccess.implementations.JurisprudenceModel;
-import mg.jurisprudence.designPattern.model.interfaces.JurisprudenceDao;
+import mg.jurisprudence.app.model.dao.DaoFactory;
+import mg.jurisprudence.app.model.dao.msaccess.implementations.JurisprudenceModel;
+import mg.jurisprudence.app.model.interfaces.JurisprudenceDao;
 
 public class MSAccess implements DaoFactory {
 	private String database;

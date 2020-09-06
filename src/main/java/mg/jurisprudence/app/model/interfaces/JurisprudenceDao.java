@@ -1,9 +1,8 @@
-package mg.jurisprudence.designPattern.model.interfaces;
+package mg.jurisprudence.app.model.interfaces;
 
 import mg.jurisprudence.beans.Jurisprudence;
 import mg.jurisprudence.engine.Constraint;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public interface JurisprudenceDao {

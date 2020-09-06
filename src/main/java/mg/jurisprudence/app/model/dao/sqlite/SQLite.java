@@ -1,10 +1,9 @@
-package mg.jurisprudence.designPattern.model.dao.sqlite;
+package mg.jurisprudence.app.model.dao.sqlite;
 
-import mg.jurisprudence.designPattern.model.dao.DaoFactory;
-import mg.jurisprudence.designPattern.model.dao.msaccess.MSAccess;
-import mg.jurisprudence.designPattern.model.dao.postgresql.PostgreSQL;
-import mg.jurisprudence.designPattern.model.dao.sqlite.implementation.JurisprudenceModel;
-import mg.jurisprudence.designPattern.model.interfaces.JurisprudenceDao;
+import mg.jurisprudence.app.model.dao.DaoFactory;
+import mg.jurisprudence.app.model.dao.msaccess.MSAccess;
+import mg.jurisprudence.app.model.dao.sqlite.implementation.JurisprudenceModel;
+import mg.jurisprudence.app.model.interfaces.JurisprudenceDao;
 
 import java.io.File;
 import java.io.IOException;

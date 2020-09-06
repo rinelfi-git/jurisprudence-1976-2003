@@ -1,6 +1,6 @@
-package mg.jurisprudence.designPattern.model.dao;
+package mg.jurisprudence.app.model.dao;
 
-import mg.jurisprudence.designPattern.model.interfaces.JurisprudenceDao;
+import mg.jurisprudence.app.model.interfaces.JurisprudenceDao;
 
 import java.sql.Connection;
 

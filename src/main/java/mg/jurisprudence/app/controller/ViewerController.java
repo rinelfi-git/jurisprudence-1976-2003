@@ -1,4 +1,4 @@
-package mg.jurisprudence.designPattern.controller;
+package mg.jurisprudence.app.controller;
 
 import java.net.URL;
 import java.text.DateFormat;

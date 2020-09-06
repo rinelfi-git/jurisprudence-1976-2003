@@ -1,12 +1,11 @@
-package mg.jurisprudence.designPattern.model.dao.msaccess.implementations;
+package mg.jurisprudence.app.model.dao.msaccess.implementations;
 
 import mg.jurisprudence.beans.Jurisprudence;
-import mg.jurisprudence.designPattern.model.dao.msaccess.MSAccess;
-import mg.jurisprudence.designPattern.model.interfaces.JurisprudenceDao;
+import mg.jurisprudence.app.model.dao.msaccess.MSAccess;
+import mg.jurisprudence.app.model.interfaces.JurisprudenceDao;
 import mg.jurisprudence.engine.Constraint;
 
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;

@@ -1,8 +1,8 @@
-package mg.jurisprudence.designPattern.model.dao.postgresql;
+package mg.jurisprudence.app.model.dao.postgresql;
 
-import mg.jurisprudence.designPattern.model.dao.DaoFactory;
-import mg.jurisprudence.designPattern.model.dao.postgresql.implementations.JurisprudenceModel;
-import mg.jurisprudence.designPattern.model.interfaces.JurisprudenceDao;
+import mg.jurisprudence.app.model.dao.DaoFactory;
+import mg.jurisprudence.app.model.dao.postgresql.implementations.JurisprudenceModel;
+import mg.jurisprudence.app.model.interfaces.JurisprudenceDao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
