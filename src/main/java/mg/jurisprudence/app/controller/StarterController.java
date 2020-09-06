@@ -1,6 +1,13 @@
 package mg.jurisprudence.app.controller;
 
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -33,7 +40,6 @@ public class StarterController implements Initializable {
 	private DaoFactory daoFactory;
 	private JurisprudenceDao jurisprudenceDao;
 	private String[] selectionDateElements;
-	ArrayList<Constraint> constraints;
 	
 	@FXML
 	private Button showRecord;
@@ -79,7 +85,6 @@ public class StarterController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		this.selectionDateElements = new String[]{"", "Du", "Avant le", "Après le", "Entre le"};
-		constraints = new ArrayList<>();
 		initSelectionDate();
 		showRecord.setDisable(true);
 		dateFin.setDisable(true);
@@ -110,8 +115,8 @@ public class StarterController implements Initializable {
 	}
 	
 	private void initTable() {
-		jurId.setCellValueFactory(new PropertyValueFactory<Jurisprudence, Integer>("id"));
-		jurDate.setCellValueFactory(cell -> cell.getValue().tableViewDate());
+		jurId.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getId()).asObject());
+		jurDate.setCellValueFactory(cell -> new SimpleObjectProperty<Date>(cell.getValue().getDateDecision()));
 		jurDate.setCellFactory(column -> {
 			TableCell<Jurisprudence, Date> cell = new TableCell<Jurisprudence, Date>() {
 				private SimpleDateFormat format = new SimpleDateFormat("dd MMMM yyyy");
@@ -129,9 +134,9 @@ public class StarterController implements Initializable {
 			};
 			return cell;
 		});
-		jurNumero.setCellValueFactory(new PropertyValueFactory<Jurisprudence, String>("numero"));
-		jurNomPartie.setCellValueFactory(new PropertyValueFactory<Jurisprudence, String>("nom_partie"));
-		jurCommentaire.setCellValueFactory(new PropertyValueFactory<Jurisprudence, String>("commentaire"));
+		jurNumero.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getNumero()));
+		jurNomPartie.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getNomPartie()));
+		jurCommentaire.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getCommentaire()));
 	}
 	
 	private void initDates() {
@@ -221,7 +226,6 @@ public class StarterController implements Initializable {
 		else if (!constraint.isTreatDate() && textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithoutDate(constraint);
 		else if (!constraint.isTreatDate() && !textConstraintExists) jurisprudences = this.jurisprudenceDao.select();
 		tableView.setItems(FXCollections.observableArrayList(jurisprudences));
-		constraints = new ArrayList<>();
 		showRecord.setDisable(true);
 	}
 	

@@ -75,30 +75,6 @@ public class Jurisprudence {
 		return _id.get();
 	}
 	
-	public ObjectProperty<Date> tableViewDate() {
-		ObjectProperty<Date> _date_decision = new SimpleObjectProperty<>();
-		_date_decision.set(getDateDecision());
-		return _date_decision;
-	}
-	
-	public String tableViewNumero() {
-		StringProperty _numero = new SimpleStringProperty(this, "numero");
-		_numero.set(getNumero());
-		return _numero.get();
-	}
-	
-	public String tableViewNomPartie() {
-		StringProperty _nomPartie = new SimpleStringProperty(this, "nom_partie");
-		_nomPartie.set(getNomPartie());
-		return _nomPartie.get();
-	}
-	
-	public String tableViewCommetaire() {
-		StringProperty _commentaire = new SimpleStringProperty(this, "commentaire");
-		_commentaire.set(getCommentaire());
-		return _commentaire.get();
-	}
-	
 	public String toString() {
 		return "[" + getId() + "] => {\n" +
 			       "\t[numero]        => \"" + getNumero() + "\"\n" +
