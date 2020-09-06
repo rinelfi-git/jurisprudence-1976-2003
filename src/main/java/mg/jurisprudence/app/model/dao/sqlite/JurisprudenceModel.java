@@ -39,7 +39,7 @@ public class JurisprudenceModel implements JurisprudenceDao {
 			while (resultSet.next()) {
 				Jurisprudence jurisprudence = new Jurisprudence();
 				jurisprudence.setCommentaire(resultSet.getString("commentaire"));
-				jurisprudence.setDateDecision(resultSet.getString("date_decision") != null && !"".equals(resultSet.getString("date_decision"))? new SimpleDateFormat("yyyy-MM-dd").parse(resultSet.getString("date_decision")) : null);
+				jurisprudence.setDateDecision(resultSet.getString("date_decision") != null && !"".equals(resultSet.getString("date_decision")) ? new SimpleDateFormat("yyyy-MM-dd").parse(resultSet.getString("date_decision")) : null);
 				jurisprudence.setId(resultSet.getInt("id"));
 				jurisprudence.setNomPartie(resultSet.getString("nom_partie").replaceAll("c/", "[CONTRE]"));
 				jurisprudence.setNumero(resultSet.getString("numero"));
@@ -49,9 +49,9 @@ public class JurisprudenceModel implements JurisprudenceDao {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (connection != null) connection.close();
-				if (preparedStatement != null) preparedStatement.close();
 				if (resultSet != null) resultSet.close();
+				if (preparedStatement != null) preparedStatement.close();
+				if (connection != null) connection.close();
 			} catch (SQLException throwables) {
 				throwables.printStackTrace();
 			}
@@ -88,7 +88,7 @@ public class JurisprudenceModel implements JurisprudenceDao {
 			while (resultSet.next()) {
 				Jurisprudence jurisprudence = new Jurisprudence();
 				jurisprudence.setCommentaire(resultSet.getString("commentaire"));
-				jurisprudence.setDateDecision(resultSet.getString("date_decision") != null && !"".equals(resultSet.getString("date_decision"))? new SimpleDateFormat("yyyy-MM-dd").parse(resultSet.getString("date_decision")) : null);
+				jurisprudence.setDateDecision(resultSet.getString("date_decision") != null && !"".equals(resultSet.getString("date_decision")) ? new SimpleDateFormat("yyyy-MM-dd").parse(resultSet.getString("date_decision")) : null);
 				jurisprudence.setId(resultSet.getInt("id"));
 				jurisprudence.setNomPartie(resultSet.getString("nom_partie").replaceAll("c/", "[CONTRE]"));
 				jurisprudence.setNumero(resultSet.getString("numero"));
@@ -98,9 +98,9 @@ public class JurisprudenceModel implements JurisprudenceDao {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (connection != null) connection.close();
-				if (preparedStatement != null) preparedStatement.close();
 				if (resultSet != null) resultSet.close();
+				if (preparedStatement != null) preparedStatement.close();
+				if (connection != null) connection.close();
 			} catch (SQLException throwables) {
 				throwables.printStackTrace();
 			}
@@ -132,7 +132,7 @@ public class JurisprudenceModel implements JurisprudenceDao {
 			while (resultSet.next()) {
 				Jurisprudence jurisprudence = new Jurisprudence();
 				jurisprudence.setCommentaire(resultSet.getString("commentaire"));
-				jurisprudence.setDateDecision(resultSet.getString("date_decision") != null && !"".equals(resultSet.getString("date_decision"))? new SimpleDateFormat("yyyy-MM-dd").parse(resultSet.getString("date_decision")) : null);
+				jurisprudence.setDateDecision(resultSet.getString("date_decision") != null && !"".equals(resultSet.getString("date_decision")) ? new SimpleDateFormat("yyyy-MM-dd").parse(resultSet.getString("date_decision")) : null);
 				jurisprudence.setId(resultSet.getInt("id"));
 				jurisprudence.setNomPartie(resultSet.getString("nom_partie").replaceAll("c/", "[CONTRE]"));
 				jurisprudence.setNumero(resultSet.getString("numero"));
@@ -142,9 +142,9 @@ public class JurisprudenceModel implements JurisprudenceDao {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (connection != null) connection.close();
-				if (preparedStatement != null) preparedStatement.close();
 				if (resultSet != null) resultSet.close();
+				if (preparedStatement != null) preparedStatement.close();
+				if (connection != null) connection.close();
 			} catch (SQLException throwables) {
 				throwables.printStackTrace();
 			}
@@ -166,7 +166,7 @@ public class JurisprudenceModel implements JurisprudenceDao {
 			while (resultSet.next()) {
 				Jurisprudence jurisprudence = new Jurisprudence();
 				jurisprudence.setCommentaire(resultSet.getString("commentaire"));
-				jurisprudence.setDateDecision(resultSet.getString("date_decision") != null && !"".equals(resultSet.getString("date_decision"))? new SimpleDateFormat("yyyy-MM-dd").parse(resultSet.getString("date_decision")) : null);
+				jurisprudence.setDateDecision(resultSet.getString("date_decision") != null && !"".equals(resultSet.getString("date_decision")) ? new SimpleDateFormat("yyyy-MM-dd").parse(resultSet.getString("date_decision")) : null);
 				jurisprudence.setId(resultSet.getInt("id"));
 				jurisprudence.setNomPartie(resultSet.getString("nom_partie").replaceAll("c/", "[CONTRE]"));
 				jurisprudence.setNumero(resultSet.getString("numero"));
@@ -176,8 +176,8 @@ public class JurisprudenceModel implements JurisprudenceDao {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (statement != null) statement.close();
 				if (resultSet != null) resultSet.close();
+				if (statement != null) statement.close();
 				if (connection != null) connection.close();
 			} catch (SQLException throwables) {
 				throwables.printStackTrace();
@@ -201,7 +201,7 @@ public class JurisprudenceModel implements JurisprudenceDao {
 			if (resultSet.next()) {
 				jurisprudence = new Jurisprudence();
 				jurisprudence.setCommentaire(resultSet.getString("commentaire"));
-				jurisprudence.setDateDecision(resultSet.getString("date_decision") != null && !"".equals(resultSet.getString("date_decision"))? new SimpleDateFormat("yyyy-MM-dd").parse(resultSet.getString("date_decision")) : null);
+				jurisprudence.setDateDecision(resultSet.getString("date_decision") != null && !"".equals(resultSet.getString("date_decision")) ? new SimpleDateFormat("yyyy-MM-dd").parse(resultSet.getString("date_decision")) : null);
 				jurisprudence.setId(resultSet.getInt("id"));
 				jurisprudence.setNomPartie(resultSet.getString("nom_partie"));
 				jurisprudence.setNumero(resultSet.getString("numero"));
@@ -213,9 +213,9 @@ public class JurisprudenceModel implements JurisprudenceDao {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (connection != null) connection.close();
-				if (preparedStatement != null) preparedStatement.close();
 				if (resultSet != null) resultSet.close();
+				if (preparedStatement != null) preparedStatement.close();
+				if (connection != null) connection.close();
 			} catch (SQLException throwables) {
 				throwables.printStackTrace();
 			}
