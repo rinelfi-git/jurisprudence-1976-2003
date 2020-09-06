@@ -3,6 +3,7 @@ package mg.jurisprudence.designPattern.model.dao.sqlite;
 import mg.jurisprudence.designPattern.model.dao.DaoFactory;
 import mg.jurisprudence.designPattern.model.dao.msaccess.MSAccess;
 import mg.jurisprudence.designPattern.model.dao.postgresql.PostgreSQL;
+import mg.jurisprudence.designPattern.model.dao.sqlite.implementation.JurisprudenceModel;
 import mg.jurisprudence.designPattern.model.interfaces.JurisprudenceDao;
 
 import java.io.File;
@@ -14,6 +15,7 @@ import java.sql.DriverManager;
 
 public class SQLite implements DaoFactory {
 	String database;
+	
 	private SQLite(String database) {
 		setDatabase(database);
 		File databaseFile = new File(getDatabase());
@@ -44,7 +46,7 @@ public class SQLite implements DaoFactory {
 	
 	@Override
 	public JurisprudenceDao getJurisprudenceDao() {
-		return null;
+		return new JurisprudenceModel(this);
 	}
 	
 	public final String getDatabase() {

@@ -2,8 +2,7 @@ package mg.jurisprudence.beans;
 
 import java.util.Date;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 
 public class Jurisprudence {
 	private int id;
@@ -74,6 +73,30 @@ public class Jurisprudence {
 		IntegerProperty _id = new SimpleIntegerProperty(this, "id");
 		_id.set(getId());
 		return _id.get();
+	}
+	
+	public ObjectProperty<Date> tableViewDate() {
+		ObjectProperty<Date> _date_decision = new SimpleObjectProperty<>();
+		_date_decision.set(getDateDecision());
+		return _date_decision;
+	}
+	
+	public String tableViewNumero() {
+		StringProperty _numero = new SimpleStringProperty(this, "numero");
+		_numero.set(getNumero());
+		return _numero.get();
+	}
+	
+	public String tableViewNomPartie() {
+		StringProperty _nomPartie = new SimpleStringProperty(this, "nom_partie");
+		_nomPartie.set(getNumero());
+		return _nomPartie.get();
+	}
+	
+	public String tableViewCommetaire() {
+		StringProperty _commentaire = new SimpleStringProperty(this, "commentaire");
+		_commentaire.set(getNumero());
+		return _commentaire.get();
 	}
 	
 	public String toString() {

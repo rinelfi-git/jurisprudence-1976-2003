@@ -2,6 +2,7 @@ package mg.jurisprudence.designPattern.controller;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,16 +18,15 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mg.jurisprudence.beans.Jurisprudence;
 import mg.jurisprudence.designPattern.model.dao.DaoFactory;
-import mg.jurisprudence.designPattern.model.dao.msaccess.MSAccess;
-import mg.jurisprudence.designPattern.model.dao.postgresql.PostgreSQL;
+import mg.jurisprudence.designPattern.model.dao.sqlite.SQLite;
 import mg.jurisprudence.designPattern.model.interfaces.JurisprudenceDao;
 import mg.jurisprudence.engine.Constraint;
+import mg.jurisprudence.engine.MSAccessConstraint;
+import mg.jurisprudence.engine.SQLiteConstraint;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,7 +68,7 @@ public class StarterController implements Initializable {
 	private TableColumn<Jurisprudence, Integer> jurId;
 	
 	@FXML
-	private TableColumn<Jurisprudence, String> jurDate;
+	private TableColumn<Jurisprudence, Date> jurDate;
 	
 	@FXML
 	private TableColumn<Jurisprudence, String> jurNumero;
@@ -90,7 +90,7 @@ public class StarterController implements Initializable {
 		initDates();
 		new Thread(() -> {
 			Platform.runLater(() -> {
-				daoFactory = MSAccess.getInstance();
+				daoFactory = SQLite.getInstance();
 				jurisprudenceDao = daoFactory.getJurisprudenceDao();
 				try {
 					daoFactory.getConnection();
@@ -114,10 +114,27 @@ public class StarterController implements Initializable {
 	
 	private void initTable() {
 		jurId.setCellValueFactory(new PropertyValueFactory<Jurisprudence, Integer>("id"));
-		jurDate.setCellValueFactory(cell -> (new SimpleStringProperty(String.valueOf(cell.getValue().getDateDecision()))));
-		jurNumero.setCellValueFactory(cell -> (new SimpleStringProperty(String.valueOf(cell.getValue().getNumero()))));
-		jurNomPartie.setCellValueFactory(cell -> (new SimpleStringProperty(String.valueOf(cell.getValue().getNomPartie()))));
-		jurCommentaire.setCellValueFactory(cell -> (new SimpleStringProperty(String.valueOf(cell.getValue().getCommentaire()))));
+		jurDate.setCellValueFactory(cell -> cell.getValue().tableViewDate());
+		jurDate.setCellFactory(column -> {
+			TableCell<Jurisprudence, Date> cell = new TableCell<Jurisprudence, Date>(){
+				private SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+				@Override
+				protected void updateItem(Date item, boolean empty) {
+					super.updateItem(item, empty);
+					if(empty) {
+						setText(null);
+					}
+					else {
+						if(item != null)
+							this.setText(format.format(item));
+					}
+				}
+			};
+			return cell;
+		});
+		jurNumero.setCellValueFactory(new PropertyValueFactory<Jurisprudence, String>("numero"));
+		jurNomPartie.setCellValueFactory(new PropertyValueFactory<Jurisprudence, String>("nom_partie"));
+		jurCommentaire.setCellValueFactory(new PropertyValueFactory<Jurisprudence, String>("commentaire"));
 	}
 	
 	private void initDates() {
@@ -172,7 +189,7 @@ public class StarterController implements Initializable {
 	
 	@FXML
 	void applyFilters(ActionEvent event) {
-		Constraint constraint = new Constraint();
+		Constraint constraint = new SQLiteConstraint();
 		if (!numeroArret.getText().equals("")) constraint.setNumero(numeroArret.getText());
 		if (!nomPartie.getText().equals("")) constraint.setNomParties(nomPartie.getText());
 		if (!commentaire.getText().equals("")) constraint.setCommentaire(commentaire.getText());
@@ -187,7 +204,6 @@ public class StarterController implements Initializable {
 				case 2:
 					constraint.setDateDebut(dateDebut.getValue());
 					constraint.setDateFlag(Constraint.DATE_CONSTRAINT_BEFORE);
-					constraints.add(new Constraint());
 					break;
 				case 3:
 					constraint.setDateDebut(dateDebut.getValue());
@@ -202,6 +218,7 @@ public class StarterController implements Initializable {
 		}
 		initTable();
 		ArrayList<Jurisprudence> jurisprudences = null;
+		System.out.println("Jurisprudence = " + this.jurisprudenceDao);
 		boolean textConstraintExists = !constraint.getNumero().equals("") || !constraint.getNomParties().equals("") || !constraint.getCommentaire().equals("") || !constraint.getTexte().equals("");
 		if(constraint.isTreatDate() && textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithDate(constraint);
 		else if(constraint.isTreatDate() && !textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithDateOnly(constraint);
