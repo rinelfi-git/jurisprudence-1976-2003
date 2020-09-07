@@ -1,13 +1,9 @@
 package mg.jurisprudence.app.controller;
 
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,17 +12,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mg.jurisprudence.app.model.dao.DaoFactory;
-import mg.jurisprudence.app.model.dao.MSAccess;
+import mg.jurisprudence.app.model.dao.SQLite;
 import mg.jurisprudence.app.model.interfaces.JurisprudenceDao;
 import mg.jurisprudence.beans.Jurisprudence;
 import mg.jurisprudence.engine.Constraint;
-import mg.jurisprudence.engine.MSAccessConstraint;
+import mg.jurisprudence.engine.SQLiteConstraint;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -37,63 +32,42 @@ import java.util.Date;
 import java.util.ResourceBundle;
 
 public class StarterController implements Initializable {
-	private DaoFactory daoFactory;
 	private JurisprudenceDao jurisprudenceDao;
 	private String[] selectionDateElements;
 	
 	@FXML
 	private Button showRecord;
-	
 	@FXML
-	private TextField numeroArret;
-	
-	@FXML
-	private TextField nomPartie;
-	
+	private TextField numeroArret, nomPartie, commentaire, texte;
 	@FXML
 	private ComboBox<String> selectionDate;
-	
 	@FXML
-	private DatePicker dateDebut;
-	
-	@FXML
-	private DatePicker dateFin;
-	
-	@FXML
-	private TextField commentaire;
-	
-	@FXML
-	private TextField texte;
-	
+	private DatePicker dateDebut, dateFin;
 	@FXML
 	private TableView<Jurisprudence> tableView;
 	@FXML
 	private TableColumn<Jurisprudence, Integer> jurId;
-	
 	@FXML
 	private TableColumn<Jurisprudence, Date> jurDate;
-	
 	@FXML
-	private TableColumn<Jurisprudence, String> jurNumero;
-	
-	@FXML
-	private TableColumn<Jurisprudence, String> jurNomPartie;
-	
-	@FXML
-	private TableColumn<Jurisprudence, String> jurCommentaire;
+	private TableColumn<Jurisprudence, String> jurNumero, jurNomPartie, jurCommentaire;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		// Initialize DAO Objects
+		DaoFactory daoFactory = SQLite.getInstance();
+		jurisprudenceDao = daoFactory.getJurisprudenceDao();
+		
 		this.selectionDateElements = new String[]{"", "Du", "Avant le", "Après le", "Entre le"};
 		initSelectionDate();
 		showRecord.setDisable(true);
 		dateFin.setDisable(true);
 		dateDebut.setDisable(true);
 		initDates();
+		
+		// Open the first connection for memory cache
 		new Thread(() -> {
 			Platform.runLater(() -> {
-				daoFactory = MSAccess.getInstance();
-				jurisprudenceDao = daoFactory.getJurisprudenceDao();
 				try {
 					daoFactory.getConnection();
 				} catch (Exception e) {
@@ -191,7 +165,7 @@ public class StarterController implements Initializable {
 	
 	@FXML
 	void applyFilters(ActionEvent event) {
-		Constraint constraint = new MSAccessConstraint();
+		Constraint constraint = new SQLiteConstraint();
 		if (!numeroArret.getText().equals("")) constraint.setNumero(numeroArret.getText());
 		if (!nomPartie.getText().equals("")) constraint.setNomParties(nomPartie.getText());
 		if (!commentaire.getText().equals("")) constraint.setCommentaire(commentaire.getText());

@@ -7,10 +7,10 @@ public class SQLiteConstraint extends Constraint {
 	public String getCompiledConstraint() {
 		ArrayList<String> compiledRequest = new ArrayList<>();
 		String output = "";
-		if (!"".equals(super.getNumero())) compiledRequest.add("numero ILIKE ?");
-		if (!"".equals(super.getNomParties())) compiledRequest.add("nom_partie ILIKE ?");
-		if (!"".equals(super.getCommentaire())) compiledRequest.add("commentaire ILIKE ?");
-		if (!"".equals(super.getTexte())) compiledRequest.add("texte ILIKE ?");
+		if (!"".equals(super.getNumero())) compiledRequest.add("numero LIKE ?");
+		if (!"".equals(super.getNomParties())) compiledRequest.add("nom_partie LIKE ?");
+		if (!"".equals(super.getCommentaire())) compiledRequest.add("commentaire LIKE ?");
+		if (!"".equals(super.getTexte())) compiledRequest.add("texte LIKE ?");
 		if (super.isTreatDate()) {
 			switch (super.getDateFlag()) {
 				case DATE_CONSTRAINT_BEFORE:
