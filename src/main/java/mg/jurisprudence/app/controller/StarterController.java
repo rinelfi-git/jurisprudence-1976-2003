@@ -67,17 +67,6 @@ public class StarterController implements Initializable {
 		dateFin.setDisable(true);
 		dateDebut.setDisable(true);
 		initDates();
-		
-		// Open the first connection for memory cache
-		new Thread(() -> {
-			Platform.runLater(() -> {
-				try {
-					daoFactory.getConnection();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
-		}).start();
 	}
 	
 	private void initSelectionDate() {
@@ -144,10 +133,9 @@ public class StarterController implements Initializable {
 	void selectRecord(ActionEvent event) {
 		int index = tableView.getSelectionModel().getSelectedItem().getId();
 		try {
-			FXMLLoader loader = new FXMLLoader();
-			URL location = getClass().getResource("/mg/jurisprudence/app/view/ViewerView.fxml");
-			loader.load(location.openStream());
-			Scene scene = new Scene(loader.getRoot());
+			final FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(StarterController.class.getResource("/mg/jurisprudence/app/view/ViewerView.fxml"));
+			Scene scene = new Scene(loader.load());
 			Stage stage = new Stage();
 			final Jurisprudence jurisprudences[] = new Jurisprudence[]{new Jurisprudence()};
 			// Execute the request on parallel
@@ -159,6 +147,7 @@ public class StarterController implements Initializable {
 				stage.setTitle("Arrêté N°" + jurisprudences[0].getNumero());
 				stage.setScene(scene);
 				stage.initModality(Modality.APPLICATION_MODAL);
+				stage.setResizable(false);
 				stage.show();
 			});
 		} catch (Exception e) {
@@ -168,50 +157,52 @@ public class StarterController implements Initializable {
 	
 	@FXML
 	void applyFilters(ActionEvent event) {
-		Constraint constraint = new MSAccessConstraint();
-		if (!numeroArret.getText().equals("")) constraint.setNumero(numeroArret.getText());
-		if (!nomPartie.getText().equals("")) constraint.setNomParties(nomPartie.getText());
-		if (!commentaire.getText().equals("")) constraint.setCommentaire(commentaire.getText());
-		if (!texte.getText().equals("")) constraint.setTexte(texte.getText());
-		if (selectionDate.getSelectionModel().getSelectedIndex() != 0) {
-			constraint.setTreatDate(true);
-			switch (selectionDate.getSelectionModel().getSelectedIndex()) {
-				case 1:
-					constraint.setDateDebut(dateDebut.getValue());
-					constraint.setDateFlag(Constraint.DATE_CONSTRAINT_EQUAL);
-					break;
-				case 2:
-					constraint.setDateDebut(dateDebut.getValue());
-					constraint.setDateFlag(Constraint.DATE_CONSTRAINT_BEFORE);
-					break;
-				case 3:
-					constraint.setDateDebut(dateDebut.getValue());
-					constraint.setDateFlag(Constraint.DATE_CONSTRAINT_AFTER);
-					break;
-				case 4:
-					constraint.setDateDebut(dateDebut.getValue());
-					constraint.setDateFin(dateFin.getValue());
-					constraint.setDateFlag(Constraint.DATE_CONSTRAINT_BETWEEN);
-					break;
-			}
-		}
-		initTable();
-		ArrayList<Jurisprudence>[] jurisprudences = new ArrayList[]{null};
-		boolean textConstraintExists = !constraint.getNumero().equals("") || !constraint.getNomParties().equals("") || !constraint.getCommentaire().equals("") || !constraint.getTexte().equals("");
-		if (constraint.isTreatDate() && textConstraintExists) jurisprudences[0] = this.jurisprudenceDao.selectWithDate(constraint);
-		else if (constraint.isTreatDate() && !textConstraintExists) jurisprudences[0] = this.jurisprudenceDao.selectWithDateOnly(constraint);
-		else if (!constraint.isTreatDate() && textConstraintExists) jurisprudences[0] = this.jurisprudenceDao.selectWithoutDate(constraint);
-		else if (!constraint.isTreatDate() && !textConstraintExists) jurisprudences[0] = this.jurisprudenceDao.select();
-		final Cursor oldCursor = getStage().getScene().getCursor();
+		final Scene scene = getStage().getScene();
+		final Cursor oldCursor = scene.getCursor();
 		Cursor waitingCursor = Cursor.WAIT;
-		getStage().getScene().setCursor(waitingCursor);
-		final Service<ObservableList> dataLoadService = new Service<ObservableList>() {
+		scene.setCursor(waitingCursor);
+		final Service<Void> dataLoadService = new Service<Void>() {
 			@Override
-			protected Task<ObservableList> createTask() {
-				return new Task<ObservableList>() {
+			protected Task<Void> createTask() {
+				return new Task<Void>() {
 					@Override
-					protected ObservableList call() throws Exception {
-						return FXCollections.observableArrayList(jurisprudences[0]);
+					protected Void call() throws Exception {
+						Constraint constraint = new MSAccessConstraint();
+						if (!numeroArret.getText().equals("")) constraint.setNumero(numeroArret.getText());
+						if (!nomPartie.getText().equals("")) constraint.setNomParties(nomPartie.getText());
+						if (!commentaire.getText().equals("")) constraint.setCommentaire(commentaire.getText());
+						if (!texte.getText().equals("")) constraint.setTexte(texte.getText());
+						if (selectionDate.getSelectionModel().getSelectedIndex() != 0) {
+							constraint.setTreatDate(true);
+							switch (selectionDate.getSelectionModel().getSelectedIndex()) {
+								case 1:
+									constraint.setDateDebut(dateDebut.getValue());
+									constraint.setDateFlag(Constraint.DATE_CONSTRAINT_EQUAL);
+									break;
+								case 2:
+									constraint.setDateDebut(dateDebut.getValue());
+									constraint.setDateFlag(Constraint.DATE_CONSTRAINT_BEFORE);
+									break;
+								case 3:
+									constraint.setDateDebut(dateDebut.getValue());
+									constraint.setDateFlag(Constraint.DATE_CONSTRAINT_AFTER);
+									break;
+								case 4:
+									constraint.setDateDebut(dateDebut.getValue());
+									constraint.setDateFin(dateFin.getValue());
+									constraint.setDateFlag(Constraint.DATE_CONSTRAINT_BETWEEN);
+									break;
+							}
+						}
+						initTable();
+						ArrayList<Jurisprudence>[] jurisprudences = new ArrayList[]{null};
+						boolean textConstraintExists = !constraint.getNumero().equals("") || !constraint.getNomParties().equals("") || !constraint.getCommentaire().equals("") || !constraint.getTexte().equals("");
+						if (constraint.isTreatDate() && textConstraintExists) jurisprudences[0] = jurisprudenceDao.selectWithDate(constraint);
+						else if (constraint.isTreatDate() && !textConstraintExists) jurisprudences[0] = jurisprudenceDao.selectWithDateOnly(constraint);
+						else if (!constraint.isTreatDate() && textConstraintExists) jurisprudences[0] = jurisprudenceDao.selectWithoutDate(constraint);
+						else if (!constraint.isTreatDate() && !textConstraintExists) jurisprudences[0] = jurisprudenceDao.select();
+						tableView.setItems(FXCollections.observableArrayList(jurisprudences[0]));
+						return null;
 					}
 				};
 			}
@@ -221,8 +212,7 @@ public class StarterController implements Initializable {
 				case FAILED:
 				case CANCELLED:
 				case SUCCEEDED:
-					getStage().getScene().setCursor(oldCursor);
-					tableView.setItems(dataLoadService.getValue());
+					scene.setCursor(oldCursor);
 					break;
 			}
 		});
