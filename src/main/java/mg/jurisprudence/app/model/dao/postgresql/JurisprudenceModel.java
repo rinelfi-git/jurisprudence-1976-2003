@@ -1,10 +1,10 @@
 package mg.jurisprudence.app.model.dao.postgresql;
 
-import mg.jurisprudence.beans.Jurisprudence;
 import mg.jurisprudence.app.model.dao.DaoFactory;
 import mg.jurisprudence.app.model.dao.PostgreSQL;
-import mg.jurisprudence.engine.Constraint;
 import mg.jurisprudence.app.model.interfaces.JurisprudenceDao;
+import mg.jurisprudence.beans.Jurisprudence;
+import mg.jurisprudence.engine.Constraint;
 
 import java.sql.*;
 import java.time.Instant;
@@ -21,15 +21,13 @@ public class JurisprudenceModel implements JurisprudenceDao {
 	
 	@Override
 	public ArrayList<Jurisprudence> selectWithoutDate(Constraint constraint) {
-		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 		ArrayList<Jurisprudence> jurisprudences = new ArrayList<>();
 		String query = "SELECT id, numero, nom_partie, date_decision, commentaire FROM arrete WHERE ";
 		query += constraint.getCompiledConstraint();
 		try {
-			connection = postgreSQL.getConnection();
-			preparedStatement = connection.prepareStatement(query);
+			preparedStatement = postgreSQL.getConnection().prepareStatement(query);
 			int index = 0;
 			if (!"".equals(constraint.getNumero())) preparedStatement.setString(++index, "%" + constraint.getNumero() + "%");
 			if (!"".equals(constraint.getNomParties())) preparedStatement.setString(++index, "%" + constraint.getNomParties() + "%");
@@ -49,7 +47,6 @@ public class JurisprudenceModel implements JurisprudenceDao {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (connection != null) connection.close();
 				if (preparedStatement != null) preparedStatement.close();
 				if (resultSet != null) resultSet.close();
 			} catch (SQLException throwables) {
@@ -68,8 +65,7 @@ public class JurisprudenceModel implements JurisprudenceDao {
 		String query = "SELECT id, numero, nom_partie, date_decision, commentaire FROM arrete WHERE ";
 		constraint.setCombined(true);
 		query += constraint.getCompiledConstraint();
-		Instant instant = Instant.from(constraint.getDateDebut().atStartOfDay(ZoneId.systemDefault()));
-		java.util.Date date = java.util.Date.from(instant);
+		Date date = Date.from(Instant.from(constraint.getDateDebut().atStartOfDay(ZoneId.systemDefault())));
 		try {
 			connection = postgreSQL.getConnection();
 			preparedStatement = connection.prepareStatement(query);
@@ -80,9 +76,7 @@ public class JurisprudenceModel implements JurisprudenceDao {
 			if (!"".equals(constraint.getTexte())) preparedStatement.setString(++index, "%" + constraint.getTexte() + "%");
 			preparedStatement.setTimestamp(++index, new Timestamp(date.getTime()));
 			if (constraint.getDateFlag() == Constraint.DATE_CONSTRAINT_BETWEEN) {
-				instant = Instant.from(constraint.getDateFin().atStartOfDay(ZoneId.systemDefault()));
-				date = Date.from(instant);
-				preparedStatement.setTimestamp(++index, new Timestamp(date.getTime()));
+				preparedStatement.setTimestamp(++index, new Timestamp(Date.from(Instant.from(constraint.getDateFin().atStartOfDay(ZoneId.systemDefault()))).getTime()));
 			}
 			resultSet = preparedStatement.executeQuery();
 			while (resultSet.next()) {
@@ -188,7 +182,7 @@ public class JurisprudenceModel implements JurisprudenceDao {
 	
 	@Override
 	public Jurisprudence select(int id) {
-		String query = "SELECT * FROM arrete WHERE id=?";
+		String query = "SELECT * FROM arrete WHERE id = ?";
 		Jurisprudence jurisprudence = null;
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -207,10 +201,8 @@ public class JurisprudenceModel implements JurisprudenceDao {
 				jurisprudence.setNumero(resultSet.getString("numero"));
 				jurisprudence.setTexte(resultSet.getString("texte"));
 			}
-		} catch (SQLException throwables) {
+		} catch (Exception throwables) {
 			throwables.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
 		} finally {
 			try {
 				if (connection != null) connection.close();

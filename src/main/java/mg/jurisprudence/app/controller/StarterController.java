@@ -6,10 +6,13 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -17,11 +20,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mg.jurisprudence.app.model.dao.DaoFactory;
-import mg.jurisprudence.app.model.dao.SQLite;
+import mg.jurisprudence.app.model.dao.MSAccess;
 import mg.jurisprudence.app.model.interfaces.JurisprudenceDao;
 import mg.jurisprudence.beans.Jurisprudence;
 import mg.jurisprudence.engine.Constraint;
-import mg.jurisprudence.engine.SQLiteConstraint;
+import mg.jurisprudence.engine.MSAccessConstraint;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -34,6 +37,7 @@ import java.util.ResourceBundle;
 public class StarterController implements Initializable {
 	private JurisprudenceDao jurisprudenceDao;
 	private String[] selectionDateElements;
+	private Stage stage;
 	
 	@FXML
 	private Button showRecord;
@@ -55,9 +59,8 @@ public class StarterController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		// Initialize DAO Objects
-		DaoFactory daoFactory = SQLite.getInstance();
+		DaoFactory daoFactory = MSAccess.getInstance();
 		jurisprudenceDao = daoFactory.getJurisprudenceDao();
-		
 		this.selectionDateElements = new String[]{"", "Du", "Avant le", "Après le", "Entre le"};
 		initSelectionDate();
 		showRecord.setDisable(true);
@@ -90,7 +93,7 @@ public class StarterController implements Initializable {
 	
 	private void initTable() {
 		jurId.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getId()).asObject());
-		jurDate.setCellValueFactory(cell -> new SimpleObjectProperty<Date>(cell.getValue().getDateDecision()));
+		jurDate.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getDateDecision()));
 		jurDate.setCellFactory(column -> {
 			TableCell<Jurisprudence, Date> cell = new TableCell<Jurisprudence, Date>() {
 				private SimpleDateFormat format = new SimpleDateFormat("dd MMMM yyyy");
@@ -102,7 +105,7 @@ public class StarterController implements Initializable {
 						setText(null);
 					} else {
 						if (item != null)
-							this.setText(format.format(item));
+							setText(format.format(item));
 					}
 				}
 			};
@@ -165,7 +168,7 @@ public class StarterController implements Initializable {
 	
 	@FXML
 	void applyFilters(ActionEvent event) {
-		Constraint constraint = new SQLiteConstraint();
+		Constraint constraint = new MSAccessConstraint();
 		if (!numeroArret.getText().equals("")) constraint.setNumero(numeroArret.getText());
 		if (!nomPartie.getText().equals("")) constraint.setNomParties(nomPartie.getText());
 		if (!commentaire.getText().equals("")) constraint.setCommentaire(commentaire.getText());
@@ -193,13 +196,37 @@ public class StarterController implements Initializable {
 			}
 		}
 		initTable();
-		ArrayList<Jurisprudence> jurisprudences = null;
+		ArrayList<Jurisprudence>[] jurisprudences = new ArrayList[]{null};
 		boolean textConstraintExists = !constraint.getNumero().equals("") || !constraint.getNomParties().equals("") || !constraint.getCommentaire().equals("") || !constraint.getTexte().equals("");
-		if (constraint.isTreatDate() && textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithDate(constraint);
-		else if (constraint.isTreatDate() && !textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithDateOnly(constraint);
-		else if (!constraint.isTreatDate() && textConstraintExists) jurisprudences = this.jurisprudenceDao.selectWithoutDate(constraint);
-		else if (!constraint.isTreatDate() && !textConstraintExists) jurisprudences = this.jurisprudenceDao.select();
-		tableView.setItems(FXCollections.observableArrayList(jurisprudences));
+		if (constraint.isTreatDate() && textConstraintExists) jurisprudences[0] = this.jurisprudenceDao.selectWithDate(constraint);
+		else if (constraint.isTreatDate() && !textConstraintExists) jurisprudences[0] = this.jurisprudenceDao.selectWithDateOnly(constraint);
+		else if (!constraint.isTreatDate() && textConstraintExists) jurisprudences[0] = this.jurisprudenceDao.selectWithoutDate(constraint);
+		else if (!constraint.isTreatDate() && !textConstraintExists) jurisprudences[0] = this.jurisprudenceDao.select();
+		final Cursor oldCursor = getStage().getScene().getCursor();
+		Cursor waitingCursor = Cursor.WAIT;
+		getStage().getScene().setCursor(waitingCursor);
+		final Service<ObservableList> dataLoadService = new Service<ObservableList>() {
+			@Override
+			protected Task<ObservableList> createTask() {
+				return new Task<ObservableList>() {
+					@Override
+					protected ObservableList call() throws Exception {
+						return FXCollections.observableArrayList(jurisprudences[0]);
+					}
+				};
+			}
+		};
+		dataLoadService.stateProperty().addListener((observable, oldValue, newValue) -> {
+			switch (newValue) {
+				case FAILED:
+				case CANCELLED:
+				case SUCCEEDED:
+					getStage().getScene().setCursor(oldCursor);
+					tableView.setItems(dataLoadService.getValue());
+					break;
+			}
+		});
+		dataLoadService.start();
 		showRecord.setDisable(true);
 	}
 	
@@ -223,5 +250,13 @@ public class StarterController implements Initializable {
 			dateFin.setDisable(true);
 			dateDebut.setDisable(false);
 		}
+	}
+	
+	public Stage getStage() {
+		return stage;
+	}
+	
+	public void setStage(Stage stage) {
+		this.stage = stage;
 	}
 }
